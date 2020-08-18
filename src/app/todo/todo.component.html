@@ -1,0 +1,37 @@
+<main class="main">
+  <section class="todo-container">
+    <h1>Todo List</h1>
+    <h2>A place to store your todos</h2>
+    <!--below we use input as the event listener instead of ngSubmit because we want to list for all inputs, not just submit button clicks.-->
+    <form class="form" #filterForm="ngForm" (input)="setSearchTerm(filterForm)">
+      <input type="text" placeholder="Filter your to-dos" name="searchTerm" ngModel />
+    </form>
+    <!--below line of code contains a msg we want to show when there are no todos. we are saying if todos length is equal to 0 show the msg-->
+    <p *ngIf="todos.length===0">Enter some todos.</p>
+    <ol class="ordered-list">
+      <!--below we needed to add index as i to the li element in order to pull the index for each task to only remove that single task when X is clicked.-->
+      <li *ngFor="let todo of filter(); index as i">
+        <!-- above we changed let todo of todos to let todo of filter() so that a new array is created if a term is searched-->
+        <div class="list-item">
+          <!--Below we added the click angular event listener so that when the X is clicked, the task changes to a strikethrough to show it was completed.-->
+          <button class="complete" *ngIf="todo.completed === false" (click)="completeTask(i)">
+            Complete
+          </button>
+          <p *ngIf="showIndex!==i" class="task" [ngClass]="{ strike: todo.completed }" (click)="setShowIndex(i)">
+            {{ todo.task }}
+          </p>
+          <!--*ngIf is a directive that provides structure to the HTML that doesn't show something unless a condition is met-->
+          <form *ngIf="showIndex === i" (ngSubmit)="resetShowIndex()">
+            <input type="text" name="update" [(ngModel)]="todo.task"/> <!--[(ngModel)] is an example of two-way binding, this syntax is called banana box-->
+          </form>
+            <button (click)="removeTask(i)">X</button> <!--i needs to be added to removeTask method in order to remove a task at a specific index.--> 
+        </div>
+      </li>
+    </ol>
+    <!--In the form line below we have to call the method after the event listener but before (addForm)-->
+    <form class="form" #addForm = "ngForm" (ngSubmit)="addTask(addForm)">
+      <input type="text" name= "task" placeholder="Add your to-do" ngModel/>
+      <button class="add">Add</button>
+    </form>
+  </section>
+</main>
